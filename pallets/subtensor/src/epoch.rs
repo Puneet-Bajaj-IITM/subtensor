@@ -355,6 +355,7 @@ impl<T: Config> Pallet<T> {
     #[allow(clippy::indexing_slicing)]
     pub fn epoch(netuid: u16, rao_emission: u64) -> Vec<(T::AccountId, u64, u64)> {
         // Get subnetwork size.
+		let rao_emission = Self::get_rao_emission(netuid);
         let n: u16 = Self::get_subnetwork_n(netuid);
         log::trace!("n: {:?}", n);
 
@@ -699,6 +700,20 @@ impl<T: Config> Pallet<T> {
                     validator_emission[uid_i as usize],
                 )
             })
+            if incentive.unwrap_or(false) {
+		        // Return incentive as Vec<I32F32>
+		        incentive
+		    } else {
+		        // Return emission tuples as before
+		        hotkeys
+		            .into_iter()
+		            .map(|(uid_i, hotkey)| {
+		                (
+		                    hotkey,
+		                    server_emission[uid_i as usize],
+		                    validator_emission[uid_i as usize],
+		                )
+		            })
             .collect()
     }
 
